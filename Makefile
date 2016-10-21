@@ -28,13 +28,13 @@ install-python-dependencies:
 	sudo -H pip3 install --upgrade ${pydeps}
 else
 install-python-dependencies:
-	pip3 install --upgrade pyyaml boto3
+	sudo -H pip3 install --upgrade ${pydeps}
 endif
 
 install-tools: $(tools)
 
 /usr/local/bin/%: ./tools/%
-	install -S -m 0755 $< /usr/local/bin
+	sudo install -S -m0755 $< /usr/local/bin
 
 amis:
 	pack-ami build -p ./packer -t base -r

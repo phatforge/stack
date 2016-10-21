@@ -50,15 +50,34 @@ variable "environment" {
   description = "Environment tag, e.g prod"
 }
 
+
+data "aws_ami" "bastion_ami" {
+  most_recent = true
+
+  owners = ["099720109477"]
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  name_regex = "ubuntu/images/.*/ubuntu-xenial"
+}
+
 module "ami" {
   source        = "github.com/terraform-community-modules/tf_aws_ubuntu_ami/ebs"
   region        = "${var.region}"
   distribution  = "trusty"
   instance_type = "${var.instance_type}"
+
 }
 
 resource "aws_instance" "bastion" {
-  ami                    = "${module.ami.ami_id}"
+  ami                    = "${data.aws_ami.bastion_ami.id}"
   source_dest_check      = false
   instance_type          = "${var.instance_type}"
   subnet_id              = "${var.subnet_id}"
